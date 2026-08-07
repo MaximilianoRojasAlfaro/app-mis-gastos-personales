@@ -1,22 +1,32 @@
 package cl.bootcamp.maximilianorojas.misgastospersonales.ui.screen
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.ui.graphics.vector.ImageVector
+
 enum class ScreenEnum(
     val titulo: String,
-    val ruta: String
+    val route: String,
+    val icono: ImageVector
 ) {
 
     HOME(
-        titulo = "Home",
-        ruta = "home"
+        titulo = "Resumen",
+        route = "home",
+        icono = Icons.Filled.Home
     ),
 
     NUEVO_GASTO(
         titulo = "Nuevo Gasto",
-        ruta = "nuevoGasto"
+        route = "nuevoGasto",
+        icono = Icons.Filled.AddCircle
     ),
 
     HISTORIAL(
         titulo = "Historial",
-        ruta = "historial"
+        route = "historial",
+        icono = Icons.Filled.History
     )
 }

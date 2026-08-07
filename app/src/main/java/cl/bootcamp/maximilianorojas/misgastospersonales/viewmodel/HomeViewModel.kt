@@ -8,15 +8,5 @@ import cl.bootcamp.maximilianorojas.misgastospersonales.ui.screen.ScreenEnum
 
 class HomeViewModel : ViewModel() {
 
-    var actualScreen by mutableStateOf(ScreenEnum.HOME)
-        private set
-
-    fun changeToNuevoGasto() {
-        actualScreen = ScreenEnum.NUEVO_GASTO
-    }
-
-    fun changeToHistorial() {
-        actualScreen = ScreenEnum.HISTORIAL
-    }
 
 }

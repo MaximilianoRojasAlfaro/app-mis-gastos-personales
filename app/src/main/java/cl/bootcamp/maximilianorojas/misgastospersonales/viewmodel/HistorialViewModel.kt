@@ -1,4 +1,9 @@
 package cl.bootcamp.maximilianorojas.misgastospersonales.viewmodel
 
-class HistorialViewModel {
+import androidx.compose.runtime.mutableStateListOf
+import androidx.lifecycle.ViewModel
+import cl.bootcamp.maximilianorojas.misgastospersonales.data.Gasto
+
+class HistorialViewModel: ViewModel() {
+
 }
