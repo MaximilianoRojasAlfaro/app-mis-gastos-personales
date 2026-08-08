@@ -6,12 +6,18 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import cl.bootcamp.maximilianorojas.misgastospersonales.data.DetalleMes
 import cl.bootcamp.maximilianorojas.misgastospersonales.data.Gasto
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 class NuevoGastoViewModel: ViewModel() {
 
     val listaGastos = mutableStateListOf<Gasto>()
+
+
 
     var concepto by mutableStateOf("")
         private set
@@ -25,6 +31,7 @@ class NuevoGastoViewModel: ViewModel() {
     var errorMonto: String? by mutableStateOf(null)
         private set
 
+    //TODO: Agregar al enabled del botón agregar gasto
     val esFormularioValido: Boolean
         get() = errorConcepto == null && errorMonto == null
 
@@ -38,8 +45,10 @@ class NuevoGastoViewModel: ViewModel() {
     fun agregarGasto() {
 
         val date = Date()
-        val fecha = date.toString().substring(0, 10)
-        val hora = date.toString().substring(11, 16)
+        val formatoFecha = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val formatoHora = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val fecha = formatoFecha.format(date)
+        val hora = formatoHora.format(date)
 
         val conceptoFormateado = formatearConcepto(this.concepto)
 
@@ -89,6 +98,63 @@ class NuevoGastoViewModel: ViewModel() {
     fun eliminarMonto(): Int {
         this.monto = 0
         return this.monto
+    }
+
+    fun obtenerMontoTotalMesActual(): Int {
+
+        val date = Date()
+
+        val formatoMesActual = SimpleDateFormat("yyyy-MM", Locale.getDefault())
+        val mesActual = formatoMesActual.format(date)
+
+        val total = listaGastos
+            .filter { it.fecha.startsWith(mesActual) }
+            .sumOf { it.monto }
+
+        return total.toInt()
+    }
+
+    //TODO: Agregar a futuro, codigo todavía no lo entiendo al 100% (IA)
+//    fun obtenerTotalesMesesAnteriores(): List<DetalleMes> {
+//
+//        val date = Date()
+//        val formatoMesActual = SimpleDateFormat("yyyy-MM", Locale.getDefault())
+//        val mesActual = formatoMesActual.format(date)
+//
+//        return listaGastos
+//            .filter { !it.fecha.startsWith(mesActual) }
+//            .groupBy { it.fecha.substring(0, 7) }
+//            .map { (mes, gastosDelMes) ->
+//                DetalleMes(
+//                    mesFormateado = mes,
+//                    total = gastosDelMes.sumOf { it.monto }.toInt()
+//                )
+//            }
+//            .sortedByDescending { it.mesFormateado }
+//            .take(5)
+//    }
+
+    fun obtenerMayoresGastos(): List<Gasto> {
+
+        return listaGastos
+            .sortedByDescending { it.monto }
+            .take(5)
+    }
+
+    fun formatearFechaParaVista(fecha: String): String {
+
+        val partes = fecha.split("-")
+
+        if (partes.size == 3) {
+
+            val ano = partes[0]
+            val mes = partes[1]
+            val dia = partes[2]
+
+            return "$dia/$mes/$ano"
+        }
+
+        return fecha
     }
 
 }

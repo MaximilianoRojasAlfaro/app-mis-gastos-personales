@@ -1,33 +1,28 @@
 package cl.bootcamp.maximilianorojas.misgastospersonales.ui.screen
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cl.bootcamp.maximilianorojas.misgastospersonales.data.Gasto
-import cl.bootcamp.maximilianorojas.misgastospersonales.viewmodel.HomeViewModel
+import cl.bootcamp.maximilianorojas.misgastospersonales.viewmodel.NuevoGastoViewModel
 
 @Composable
 fun Home(
     modifier: Modifier,
-    viewModel: HomeViewModel = viewModel()
+    viewModel: NuevoGastoViewModel = viewModel()
 ){
 
     //Pantalla de inicio para dar contexto y poder navegar a las demás pantallas
@@ -43,86 +38,108 @@ fun Home(
     ){
 
         Card(
-            modifier = Modifier.weight(.5f).padding(horizontal = 16.dp, vertical = 16.dp)
+            modifier = Modifier
+                .weight(.5f)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
         ){
-            //TODO: Posiblemente cambiar a futuro a una LazyColumn ya que quiero mostrar aprox unos 10 días con sus totales, o hasta de todo el mes
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
-            ) {
-
+            ){
                 //TODO: Modular Text[TituloCardResumen] a paquete *components*
                 Text(
-                    text = "Total Mensual de Gastos: $50000",
+                    text = "Gasto Mensual Actual:",
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(vertical = 24.dp)
                 )
 
-                //TODO: Modular Row(GastoDelDia) a paquete *components*
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(text = "05/08/2026", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).weight(.5f))
-
-                    Text(text = "$35000", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).weight(.5f))
-                }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(text = "05/08/2026", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().weight(.5f))
-                    Text(text = "$5000", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().weight(.5f))
-
-                }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(text = "04/08/2026", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().weight(.5f))
-                    Text(text = "$15000", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().weight(.5f))
-                }
+                Text(
+                    text = "$${viewModel.obtenerMontoTotalMesActual()}",
+                )
             }
+
+
+
+            //TODO: A futuro agregar la lista de totales de los últimos 5 meses
+//            LazyColumn(
+//                verticalArrangement = Arrangement.Center,
+//                horizontalAlignment = Alignment.CenterHorizontally,
+//                modifier = Modifier.fillMaxWidth(),
+//                content = {
+//
+//                    item {
+//                        //TODO: Modular Text[TituloCardResumen] a paquete *components*
+//                        Text(
+//                            text = "Gasto Mensual Actual: $${viewModel.obtenerMontoTotalMesActual()}",
+//                            style = MaterialTheme.typography.titleMedium,
+//                            modifier = Modifier.padding(vertical = 24.dp)
+//                        )
+//                    }
+//
+//                    val listaTotalesMesesAnteriores = viewModel.obtenerTotalesMesesAnteriores()
+//
+//                    items(listaTotalesMesesAnteriores) { gasto ->
+//
+//                        //TODO: Modular Row(GastoDelDia) a paquete *components*
+//                        Row(
+//                            verticalAlignment = Alignment.CenterVertically,
+//                            horizontalArrangement = Arrangement.Center,
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                        ) {
+//                            Text(text = gasto.mesFormateado, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).weight(.5f))
+//
+//                            Text(text = "$${gasto.total}", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).weight(.5f))
+//                        }
+//                    }
+//                }
+//            )
         }
 
         Card(
-            modifier = Modifier.weight(.5f).padding(horizontal = 16.dp, vertical = 16.dp)
+            modifier = Modifier
+                .weight(.5f)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
         ){
 
             //TODO: Posiblemente cambiar a futuro a una LazyColumn ya que quiero mostrar aprox unos 10 conceptos con el gasto más alto (ordenados de mayor a menor)
-            Column(
+            LazyColumn(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+                modifier = Modifier.fillMaxWidth(),
+                content = {
 
-                //TODO: Modular Text[TituloCardResumen] a paquete *components*
-                Text(
-                    text = "Gastos más altos:",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(vertical = 24.dp)
-                )
+                    item {
+                        //TODO: Modular Text[TituloCardResumen] a paquete *components*
+                        Text(
+                            text = "Gastos más altos:",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(vertical = 24.dp)
+                        )
+                    }
 
-                //TODO: Modular Row(GastoMasAltoDelDia) a paquete *components*
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(text = "Concepto:", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().weight(.5f))
-                    Text(text = "$15000", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().weight(.5f))
+                    val listaMayoresGastos = viewModel.obtenerMayoresGastos()
+                    items(listaMayoresGastos) { gasto ->
+
+                        //TODO: Modular Row(GastoMasAltoDelDia) a paquete *components*
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp)
+                        ) {
+                            Text(text = gasto.concepto, textAlign = TextAlign.Center, modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(.5f))
+                            Text(text = "$${gasto.monto.toInt()}", textAlign = TextAlign.Center, modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(.5f))
+                        }
+                    }
                 }
-            }
+            )
         }
     }
 }

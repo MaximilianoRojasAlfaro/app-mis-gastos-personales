@@ -119,6 +119,7 @@ fun NuevoGasto(
                         )
                     }
                 },
+            enabled = viewModel.esFormularioValido,
             content = { Text(text = "Guardar", modifier = Modifier.padding(vertical = 18.dp, horizontal = 16.dp)) },
             modifier = Modifier.padding(vertical = 16.dp)
         )
