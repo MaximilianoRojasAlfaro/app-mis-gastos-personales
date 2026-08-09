@@ -50,12 +50,21 @@ class NuevoGastoViewModel: ViewModel() {
 
         val conceptoFormateado = formatearConcepto(this.concepto)
 
-        listaGastos.add(Gasto(
-            concepto = conceptoFormateado,
-            monto = this.monto.toDouble(),
-            fecha = fecha,
-            hora = hora
-        ))
+        listaGastos.add(
+            index = 0,
+            element =
+                Gasto(
+                    concepto = conceptoFormateado,
+                    monto = this.monto.toDouble(),
+                    fecha = fecha,
+                    hora = hora
+                )
+        )
+    }
+
+    fun eliminarGasto(gasto: Gasto) {
+
+        listaGastos.remove(gasto)
     }
 
     fun cambiarConcepto(concepto: String): String {
@@ -98,20 +107,6 @@ class NuevoGastoViewModel: ViewModel() {
         return this.monto
     }
 
-    fun obtenerMontoTotalMesActual(): Int {
-
-        val date = Date()
-
-        val formatoMesActual = SimpleDateFormat("yyyy-MM", Locale.getDefault())
-        val mesActual = formatoMesActual.format(date)
-
-        val total = listaGastos
-            .filter { it.fecha.startsWith(mesActual) }
-            .sumOf { it.monto }
-
-        return total.toInt()
-    }
-
     fun obtenerMontoTotal(): Int {
 
         return listaGastos.sumOf { it.monto }.toInt()
@@ -119,9 +114,52 @@ class NuevoGastoViewModel: ViewModel() {
 
     fun obtenerMayoresGastos(): List<Gasto> {
 
+        val formatoMesActual = SimpleDateFormat("yyyy-MM", Locale.getDefault())
+        val mesActual = formatoMesActual.format(Date())
+
         return listaGastos
+            .filter { it.fecha.startsWith(mesActual) }
             .sortedByDescending { it.monto }
             .take(5)
+    }
+
+    fun obtenerTotalesGastosMesesAnteriores(): List<Gasto> {
+
+        return listaGastos
+            .groupBy { it.fecha.substring(0, 7) }
+            .map { (mes, gastosDelMes) ->
+                Gasto(
+                    concepto = "",
+                    monto = gastosDelMes.sumOf { it.monto },
+                    fecha = obtenerNombreMes(mes),
+                    hora = ""
+                )
+            }
+            .take(5)
+    }
+
+    //Se asume que el formato es el recortado: "yyyy-MM"
+    fun obtenerNombreMes(fecha: String): String {
+
+        val mesNumero = fecha.substring(startIndex = 5)
+        val mesString = when(mesNumero) {
+
+            "01" -> "Enero"
+            "02" -> "Febrero"
+            "03" -> "Marzo"
+            "04" -> "Abril"
+            "05" -> "Mayo"
+            "06" -> "Junio"
+            "07" -> "Julio"
+            "08" -> "Agosto"
+            "09" -> "Septiembre"
+            "10" -> "Octubre"
+            "11" -> "Noviembre"
+            "12" -> "Diciembre"
+            else -> "Mes Erróneo"
+        }
+
+        return mesString
     }
 
     fun formatearFechaParaVista(fecha: String): String {

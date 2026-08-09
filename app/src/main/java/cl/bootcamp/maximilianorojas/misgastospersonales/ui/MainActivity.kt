@@ -115,7 +115,7 @@ fun MainScreen(screenViewModel: MainScreenViewModel = viewModel()) {
 
             ScreenEnum.HOME -> Home(modifier = modifier)
             ScreenEnum.NUEVO_GASTO -> NuevoGasto(modifier = modifier, snackbarHostState)
-            ScreenEnum.HISTORIAL -> Historial(modifier = modifier)
+            ScreenEnum.HISTORIAL -> Historial(modifier = modifier, snackbarHostState)
         }
     }
 }

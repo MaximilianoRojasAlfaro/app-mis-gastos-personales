@@ -17,8 +17,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,14 +29,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.bootcamp.maximilianorojas.misgastospersonales.viewmodel.NuevoGastoViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun Historial(
     modifier: Modifier,
+    snackbarHostState: SnackbarHostState,
     viewModel: NuevoGastoViewModel = viewModel()
 ) {
     //Se encarga de mostrar todo el historial de gastos agregados
     //Tiene que ser una LazyColumn y dentro cards para mostrar el concepto - monto del gasto
+
+    val scope = rememberCoroutineScope()
 
     LazyColumn(
         verticalArrangement = Arrangement.Top,
@@ -68,7 +75,9 @@ fun Historial(
                     ) {
 
                         Column(
-                            modifier = Modifier.weight(.5f)
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.weight(.4f)
                         ){
                             Text(
                                 text = gasto.concepto,
@@ -81,6 +90,7 @@ fun Historial(
                             Text(
                                 text = "${viewModel.formatearFechaParaVista(gasto.fecha)} - ${gasto.hora}",
                                 textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier
                                     .fillMaxWidth()
                             )
@@ -91,17 +101,27 @@ fun Historial(
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .weight(.3f)
+                                .weight(.4f)
                                 .padding(horizontal = 4.dp)
                         )
 
                         Button(
                             modifier = Modifier.weight(.2f),
-                            onClick = {},
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Red,
                                 contentColor = Color.White
                             ),
+                            onClick = {
+                                viewModel.eliminarGasto(gasto)
+
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = "Gasto ${gasto.concepto} eliminado",
+                                        withDismissAction = true,
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            },
                             content = {
                                 Icon(
                                     Icons.Filled.Clear,
