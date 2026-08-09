@@ -6,10 +6,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import cl.bootcamp.maximilianorojas.misgastospersonales.data.DetalleMes
 import cl.bootcamp.maximilianorojas.misgastospersonales.data.Gasto
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -114,25 +112,10 @@ class NuevoGastoViewModel: ViewModel() {
         return total.toInt()
     }
 
-    //TODO: Agregar a futuro, codigo todavía no lo entiendo al 100% (IA)
-//    fun obtenerTotalesMesesAnteriores(): List<DetalleMes> {
-//
-//        val date = Date()
-//        val formatoMesActual = SimpleDateFormat("yyyy-MM", Locale.getDefault())
-//        val mesActual = formatoMesActual.format(date)
-//
-//        return listaGastos
-//            .filter { !it.fecha.startsWith(mesActual) }
-//            .groupBy { it.fecha.substring(0, 7) }
-//            .map { (mes, gastosDelMes) ->
-//                DetalleMes(
-//                    mesFormateado = mes,
-//                    total = gastosDelMes.sumOf { it.monto }.toInt()
-//                )
-//            }
-//            .sortedByDescending { it.mesFormateado }
-//            .take(5)
-//    }
+    fun obtenerMontoTotal(): Int {
+
+        return listaGastos.sumOf { it.monto }.toInt()
+    }
 
     fun obtenerMayoresGastos(): List<Gasto> {
 

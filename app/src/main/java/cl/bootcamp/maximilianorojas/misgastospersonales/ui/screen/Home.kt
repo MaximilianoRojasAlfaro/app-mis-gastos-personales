@@ -128,7 +128,7 @@ fun Home(
                             horizontalArrangement = Arrangement.SpaceEvenly,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 16.dp)
+                                .padding(vertical = 8.dp)
                         ) {
                             Text(text = gasto.concepto, textAlign = TextAlign.Center, modifier = Modifier
                                 .fillMaxWidth()
