@@ -15,11 +15,10 @@ class NuevoGastoViewModel: ViewModel() {
 
     val listaGastos = mutableStateListOf<Gasto>()
 
-
-
     var concepto by mutableStateOf("")
         private set
 
+    //Se maneja como String? para que no esté el 0 al principio del campo y que no se rompa cuando el monto supera el límite de los Ints
     var monto by mutableStateOf<String?>(null)
         private set
 
@@ -30,8 +29,10 @@ class NuevoGastoViewModel: ViewModel() {
         private set
 
     val esFormularioValido: Boolean
-        get() = errorConcepto == null && errorMonto == null && monto != null // Se agrega validacion con monto para evitar que no salte el error al principio y pueda guardar con monto = 0 o monto = null
+        get() = errorConcepto == null && errorMonto == null && monto != null // Se agrega validacion con monto para evitar que pueda guardar con [monto = 0] o [monto = null]
 
+
+    //Limpia el concepto para no guardar datos basura
     fun formatearConcepto(concepto: String): String {
 
         val conceptoFormateado = concepto.trim().replaceFirstChar { it.uppercase() }
@@ -70,12 +71,12 @@ class NuevoGastoViewModel: ViewModel() {
 
         this.concepto = concepto
 
-        errorConcepto =
-            if(concepto.isEmpty() || concepto.isBlank())
-                "El concepto no puede estar vacío"
-            else if(concepto.length > 40)
-                "El concepto no puede tener más de 40 caracteres"
-            else null
+        errorConcepto = when {
+
+            concepto.isEmpty() || concepto.isBlank() -> "El concepto no puede estar vacío"
+            concepto.length > 40 -> "El concepto no puede tener más de 40 caracteres"
+            else -> null
+        }
 
         return this.concepto
     }
@@ -112,6 +113,7 @@ class NuevoGastoViewModel: ViewModel() {
         return listaGastos.sumOf { it.monto }.toInt()
     }
 
+    //Obtiene la lista de los 5 mayores gastos del mes actual
     fun obtenerMayoresGastos(): List<Gasto> {
 
         val formatoMesActual = SimpleDateFormat("yyyy-MM", Locale.getDefault())
@@ -123,6 +125,7 @@ class NuevoGastoViewModel: ViewModel() {
             .take(5)
     }
 
+    //Obtiene la lista de los últimos 5 meses(contando el actual) con su monto total
     fun obtenerTotalesGastosMesesAnteriores(): List<Gasto> {
 
         return listaGastos
@@ -137,6 +140,7 @@ class NuevoGastoViewModel: ViewModel() {
             }
             .take(5)
     }
+
 
     //Se asume que el formato es el recortado: "yyyy-MM"
     fun obtenerNombreMes(fecha: String): String {
@@ -162,6 +166,7 @@ class NuevoGastoViewModel: ViewModel() {
         return mesString
     }
 
+    //Formato para mostrar fecha como dd/mm/yyyy
     fun formatearFechaParaVista(fecha: String): String {
 
         val partes = fecha.split("-")
