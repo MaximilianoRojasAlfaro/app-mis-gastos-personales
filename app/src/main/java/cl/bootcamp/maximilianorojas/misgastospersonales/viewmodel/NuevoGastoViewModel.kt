@@ -15,7 +15,7 @@ class NuevoGastoViewModel: ViewModel() {
 
     val listaGastos = mutableStateListOf<Gasto>()
 
-    var concepto by mutableStateOf("")
+    var concepto by mutableStateOf<String?>(null)
         private set
 
     //Se maneja como String? para que no esté el 0 al principio del campo y que no se rompa cuando el monto supera el límite de los Ints
@@ -28,8 +28,9 @@ class NuevoGastoViewModel: ViewModel() {
     var errorMonto: String? by mutableStateOf(null)
         private set
 
+    // Se agrega validacion con concepto y monto para evitar que pueda guardar con [monto = 0] o [concepto = ""] al principio del formulario
     val esFormularioValido: Boolean
-        get() = errorConcepto == null && errorMonto == null && monto != null // Se agrega validacion con monto para evitar que pueda guardar con [monto = 0] o [monto = null]
+        get() = errorConcepto == null && errorMonto == null && concepto != null && monto != null
 
 
     //Limpia el concepto para no guardar datos basura
@@ -48,7 +49,7 @@ class NuevoGastoViewModel: ViewModel() {
         val fecha = formatoFecha.format(date)
         val hora = formatoHora.format(date)
 
-        val conceptoFormateado = formatearConcepto(this.concepto)
+        val conceptoFormateado = formatearConcepto(this.concepto ?: "")
 
         listaGastos.add(
             index = 0,
@@ -78,12 +79,12 @@ class NuevoGastoViewModel: ViewModel() {
             else -> null
         }
 
-        return this.concepto
+        return this.concepto ?: ""
     }
 
     fun eliminarConcepto(): String {
-        this.concepto = ""
-        return this.concepto
+        this.concepto = null
+        return this.concepto ?: ""
     }
 
     fun cambiarMonto(monto: String): String? {
@@ -103,9 +104,9 @@ class NuevoGastoViewModel: ViewModel() {
         return this.monto
     }
 
-    fun eliminarMonto(): String? {
+    fun eliminarMonto(): String {
         this.monto = null
-        return this.monto
+        return this.monto ?: ""
     }
 
     fun obtenerMontoTotal(): Int {

@@ -47,7 +47,7 @@ fun NuevoGasto(
     ) {
 
         InputTexto(
-            valor = viewModel.concepto,
+            valor = viewModel.concepto ?: "",
             label = "Concepto",
             isError = viewModel.errorConcepto != null,
             keyboardType = KeyboardType.Text,
