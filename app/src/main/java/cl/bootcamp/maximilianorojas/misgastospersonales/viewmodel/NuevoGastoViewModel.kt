@@ -20,7 +20,7 @@ class NuevoGastoViewModel: ViewModel() {
     var concepto by mutableStateOf("")
         private set
 
-    var monto by mutableIntStateOf(0)
+    var monto by mutableStateOf<String?>(null)
         private set
 
     var errorConcepto: String? by mutableStateOf(null)
@@ -29,9 +29,8 @@ class NuevoGastoViewModel: ViewModel() {
     var errorMonto: String? by mutableStateOf(null)
         private set
 
-    //TODO: Agregar al enabled del botón agregar gasto
     val esFormularioValido: Boolean
-        get() = errorConcepto == null && errorMonto == null
+        get() = errorConcepto == null && errorMonto == null && monto != null // Se agrega validacion con monto para evitar que no salte el error al principio y pueda guardar con monto = 0 o monto = null
 
     fun formatearConcepto(concepto: String): String {
 
@@ -55,7 +54,7 @@ class NuevoGastoViewModel: ViewModel() {
             element =
                 Gasto(
                     concepto = conceptoFormateado,
-                    monto = this.monto.toDouble(),
+                    monto = this.monto?.toInt()?.toDouble() ?: 0.0,
                     fecha = fecha,
                     hora = hora
                 )
@@ -86,24 +85,25 @@ class NuevoGastoViewModel: ViewModel() {
         return this.concepto
     }
 
-    fun cambiarMonto(monto: String): Int {
+    fun cambiarMonto(monto: String): String? {
 
-        this.monto = monto.toIntOrNull() ?: 0
+        this.monto = monto
 
-        errorMonto =
-            if(monto.isEmpty() || monto.isBlank())
-                "El monto no puede estar vacío"
-            else if(monto.toIntOrNull() == null)
-                "El monto debe ser un número"
-            else if(this.monto <= 0)
-                "El monto debe ser mayor a 0"
-            else null
+        val numero = monto.toLongOrNull()
+
+        errorMonto = when {
+
+            numero == null -> "Ingresa un número válido"
+            numero > Int.MAX_VALUE -> "El monto no puede superar 2.147.483.647"
+            numero <= 0 -> "El monto no puede ser menor a 0"
+            else -> null
+        }
 
         return this.monto
     }
 
-    fun eliminarMonto(): Int {
-        this.monto = 0
+    fun eliminarMonto(): String? {
+        this.monto = null
         return this.monto
     }
 

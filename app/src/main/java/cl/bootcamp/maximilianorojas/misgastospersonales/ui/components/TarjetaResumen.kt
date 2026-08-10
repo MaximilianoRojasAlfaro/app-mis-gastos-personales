@@ -1,6 +1,7 @@
 package cl.bootcamp.maximilianorojas.misgastospersonales.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,9 +21,9 @@ fun TarjetaResumen(modifier: Modifier, titulo: String, listaGastos: List<Gasto>,
         modifier = modifier
     ){
         LazyColumn(
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             content = {
 
                 item {

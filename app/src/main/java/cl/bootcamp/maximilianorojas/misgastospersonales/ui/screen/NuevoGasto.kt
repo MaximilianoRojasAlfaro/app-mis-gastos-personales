@@ -4,8 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -25,6 +28,9 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cl.bootcamp.maximilianorojas.misgastospersonales.ui.components.BotonEnviar
+import cl.bootcamp.maximilianorojas.misgastospersonales.ui.components.InputTexto
+import cl.bootcamp.maximilianorojas.misgastospersonales.ui.components.TextoError
 import cl.bootcamp.maximilianorojas.misgastospersonales.viewmodel.NuevoGastoViewModel
 import kotlinx.coroutines.launch
 
@@ -34,94 +40,62 @@ fun NuevoGasto(
     snackbarHostState: SnackbarHostState,
     viewModel: NuevoGastoViewModel = viewModel()
 ){
-    //Formulario para poder agregar un nuevo gasto
-    //Debe tener como TextInput el concepto y el monto, y un botón grande para guardar el gasto.
-    //Incluir iconos para mayor claridad
-    //Concepto Reactividad: No puede estar vacío, no deberían ser solo números. Límite de caracteres, no es una descripción
-    //Monto Reactividad: No puede estar vacío. Solo enteros/reales POSITIVOS, no debería poder ser $0
 
     var concepto by remember { mutableStateOf(viewModel.concepto) }
-    var monto by remember { mutableIntStateOf(viewModel.monto) }
+    var monto by remember { mutableStateOf(viewModel.monto) }
 
     val scope = rememberCoroutineScope()
 
     Column(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
 
-        OutlinedTextField(
-            value = concepto,
-            onValueChange = { it ->
-                concepto = viewModel.cambiarConcepto(it)
-            },
-            label = {
-                Text(text = "Concepto")
-            },
-            isError = false,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp, horizontal = 8.dp)
+        InputTexto(
+            valor = viewModel.concepto,
+            label = "Concepto",
+            isError = viewModel.errorConcepto != null,
+            keyboardType = KeyboardType.Text,
+            onValueChange = { viewModel.cambiarConcepto(it) }
         )
 
         viewModel.errorConcepto?.let { mensaje ->
-            Text(
-                text = mensaje,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            )
+            TextoError(mensaje)
         }
 
-        OutlinedTextField(
-            value = monto.toString(),
-            onValueChange = { it ->
-                monto = viewModel.cambiarMonto(it)
-            },
-            label = {
-                Text(text = "Monto")
-            },
-            isError = false,
-            keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Number),
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth()
+        InputTexto(
+            valor = viewModel.monto ?: "",
+            label = "Monto",
+            isError = viewModel.errorMonto != null,
+            keyboardType = KeyboardType.Number,
+            onValueChange = { viewModel.cambiarMonto(it) }
         )
 
         viewModel.errorMonto?.let { mensaje ->
-            Text(
-                text = mensaje,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            )
+            TextoError(mensaje)
         }
 
-        Button(
-            onClick =
-                {
-                    viewModel.agregarGasto()
+        BotonEnviar(
+            isEnabled = viewModel.esFormularioValido,
+            onClick = {
 
-                    concepto = viewModel.eliminarConcepto()
-                    monto = viewModel.eliminarMonto()
+                viewModel.agregarGasto()
 
-                    scope.launch {
-                        snackbarHostState.showSnackbar(
-                            message = "¡Gasto registrado!",
-                            withDismissAction = true,
-                            duration = SnackbarDuration.Short
-                        )
-                    }
-                },
-            enabled = viewModel.esFormularioValido,
-            content = { Text(text = "Guardar", modifier = Modifier.padding(vertical = 18.dp, horizontal = 16.dp)) },
-            modifier = Modifier.padding(vertical = 16.dp)
+                concepto = viewModel.eliminarConcepto()
+                monto = viewModel.eliminarMonto()
+
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = "¡Gasto registrado!",
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Short
+                    )
+                }
+            }
         )
     }
 }

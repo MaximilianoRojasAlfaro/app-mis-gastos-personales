@@ -28,6 +28,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cl.bootcamp.maximilianorojas.misgastospersonales.ui.components.BotonEliminarGasto
+import cl.bootcamp.maximilianorojas.misgastospersonales.ui.components.TarjetaHistorial
+import cl.bootcamp.maximilianorojas.misgastospersonales.ui.components.TextoTotalGastos
 import cl.bootcamp.maximilianorojas.misgastospersonales.viewmodel.NuevoGastoViewModel
 import kotlinx.coroutines.launch
 
@@ -37,101 +40,38 @@ fun Historial(
     snackbarHostState: SnackbarHostState,
     viewModel: NuevoGastoViewModel = viewModel()
 ) {
-    //Se encarga de mostrar todo el historial de gastos agregados
-    //Tiene que ser una LazyColumn y dentro cards para mostrar el concepto - monto del gasto
 
     val scope = rememberCoroutineScope()
 
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize(),
         content = {
 
             item {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
-                ){
-                    Text(
-                        text = "Total: $${viewModel.obtenerMontoTotal()}"
-                    )
-                }
+                TextoTotalGastos(texto = "Total: $${viewModel.obtenerMontoTotal()}")
             }
 
             items(viewModel.listaGastos) { gasto ->
 
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp, horizontal = 8.dp)
-                ){
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 24.dp, horizontal = 16.dp)
-                    ) {
+                TarjetaHistorial(
+                    concepto = gasto.concepto,
+                    fecha = "${viewModel.formatearFechaParaVista(gasto.fecha)} - ${gasto.hora}",
+                    monto = "$${gasto.monto.toInt()}",
+                    onBotonEliminarClick = {
+                        viewModel.eliminarGasto(gasto)
 
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.weight(.4f)
-                        ){
-                            Text(
-                                text = gasto.concepto,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 8.dp)
-                            )
-
-                            Text(
-                                text = "${viewModel.formatearFechaParaVista(gasto.fecha)} - ${gasto.hora}",
-                                textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier
-                                    .fillMaxWidth()
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = "Gasto ${gasto.concepto} eliminado",
+                                withDismissAction = true,
+                                duration = SnackbarDuration.Short
                             )
                         }
-
-                        Text(
-                            text = "$${gasto.monto.toInt()}",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(.4f)
-                                .padding(horizontal = 4.dp)
-                        )
-
-                        Button(
-                            modifier = Modifier.weight(.2f),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Red,
-                                contentColor = Color.White
-                            ),
-                            onClick = {
-                                viewModel.eliminarGasto(gasto)
-
-                                scope.launch {
-                                    snackbarHostState.showSnackbar(
-                                        message = "Gasto ${gasto.concepto} eliminado",
-                                        withDismissAction = true,
-                                        duration = SnackbarDuration.Short
-                                    )
-                                }
-                            },
-                            content = {
-                                Icon(
-                                    Icons.Filled.Clear,
-                                    contentDescription = "Eliminar gasto",
-                                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp)
-                                )
-                            }
-                        )
                     }
-                }
+                )
             }
         }
     )
