@@ -67,17 +67,17 @@ class MainViewModel(
     }
 
 
-    fun obtenerGastosMasAltosDelMes(mes: Int): List<Gasto> {
+    fun obtenerGastosMasAltosDelMes(mes: Int, listaGastos: List<Gasto>): List<Gasto> {
 
-        return _uiState.value.listaGastos
+        return listaGastos
             .filter { it.fecha.substring(5, 7).toInt() == mes }
             .sortedByDescending { it.monto }
             .take(5)
     }
 
-    fun obtenerGastosPorMes(): List<ResumenMes> {
+    fun obtenerGastosPorMes(listaGastos: List<Gasto>): List<ResumenMes> {
 
-        val agrupadosPorMes: Map<String, List<Gasto>> = _uiState.value.listaGastos.groupBy { gasto ->
+        val agrupadosPorMes: Map<String, List<Gasto>> = listaGastos.groupBy { gasto ->
             gasto.fecha.substring(0, 7)
         }
 
