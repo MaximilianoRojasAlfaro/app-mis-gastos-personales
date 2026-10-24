@@ -10,10 +10,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import cl.bootcamp.maximilianorojas.misgastospersonales.data.Gasto
+import cl.bootcamp.maximilianorojas.misgastospersonales.data.modelo.Gasto
 
 @Composable
-fun ItemResumen(nombreItem: String, gasto: Gasto){
+fun ItemResumen(nombreItem: String, monto: Int){
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -31,7 +31,7 @@ fun ItemResumen(nombreItem: String, gasto: Gasto){
         )
 
         Text(
-            text = "$${gasto.monto.toInt()}",
+            text = "${monto.toInt()}",
             textAlign = TextAlign.Center,
             modifier = Modifier
             .fillMaxWidth()

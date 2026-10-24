@@ -11,7 +11,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun InputTexto(valor: String, label: String, isError: Boolean, keyboardType: KeyboardType, onValueChange: (String) -> Unit) {
+fun InputTexto(
+    valor: String,
+    label: String,
+    isError: Boolean,
+    mensajeError: String? = null,
+    keyboardType: KeyboardType,
+    onValueChange: (String) -> Unit
+) {
 
     OutlinedTextField(
         value = valor,
@@ -20,6 +27,11 @@ fun InputTexto(valor: String, label: String, isError: Boolean, keyboardType: Key
             Text(text = label)
         },
         isError = isError,
+        supportingText = {
+            if(isError && mensajeError != null) {
+                Text(text = mensajeError)
+            }
+        },
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         modifier = Modifier
             .fillMaxWidth()

@@ -1,186 +1,78 @@
 package cl.bootcamp.maximilianorojas.misgastospersonales.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import cl.bootcamp.maximilianorojas.misgastospersonales.data.Gasto
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import cl.bootcamp.maximilianorojas.misgastospersonales.data.repository.GastoRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
-class NuevoGastoViewModel: ViewModel() {
+data class NuevoGastoUiState(
+    val concepto: String = "",
+    val monto: String = "", // para no mostrar campo con valor 0
+    val errorConcepto: String? = null,
+    val errorMonto: String? = null,
+    val esFormularioValido: Boolean = false
+)
 
-    val listaGastos = mutableStateListOf<Gasto>()
+class NuevoGastoViewModel(
+    private val gastoRepository: GastoRepository
+): ViewModel() {
 
-    var concepto by mutableStateOf<String?>(null)
-        private set
+    private val _uiState = MutableStateFlow(NuevoGastoUiState())
+    val uiState = _uiState.asStateFlow()
 
-    //Se maneja como String? para que no esté el 0 al principio del campo y que no se rompa cuando el monto supera el límite de los Ints
-    var monto by mutableStateOf<String?>(null)
-        private set
+    fun onChangeConcepto(nuevoConcepto: String) {
 
-    var errorConcepto: String? by mutableStateOf(null)
-        private set
+        _uiState.update { estadoActual ->
 
-    var errorMonto: String? by mutableStateOf(null)
-        private set
+            val error = if (nuevoConcepto.isBlank()) "El concepto no puede estar vacío" else null
 
-    // Se agrega validacion con concepto y monto para evitar que pueda guardar con [monto = 0] o [concepto = ""] al principio del formulario
-    val esFormularioValido: Boolean
-        get() = errorConcepto == null && errorMonto == null && concepto != null && monto != null
-
-
-    //Limpia el concepto para no guardar datos basura
-    fun formatearConcepto(concepto: String): String {
-
-        val conceptoFormateado = concepto.trim().replaceFirstChar { it.uppercase() }
-
-        return conceptoFormateado
-    }
-
-    fun agregarGasto() {
-
-        val date = Date()
-        val formatoFecha = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val formatoHora = SimpleDateFormat("HH:mm", Locale.getDefault())
-        val fecha = formatoFecha.format(date)
-        val hora = formatoHora.format(date)
-
-        val conceptoFormateado = formatearConcepto(this.concepto ?: "")
-
-        listaGastos.add(
-            index = 0,
-            element =
-                Gasto(
-                    concepto = conceptoFormateado,
-                    monto = this.monto?.toInt()?.toDouble() ?: 0.0,
-                    fecha = fecha,
-                    hora = hora
+            estadoActual.copy(
+                concepto = nuevoConcepto,
+                errorConcepto = error,
+                esFormularioValido = validarFormulario(
+                    nuevoConcepto,
+                    error,
+                    estadoActual.monto,
+                    estadoActual.errorMonto
                 )
-        )
-    }
-
-    fun eliminarGasto(gasto: Gasto) {
-
-        listaGastos.remove(gasto)
-    }
-
-    fun cambiarConcepto(concepto: String): String {
-
-        this.concepto = concepto
-
-        errorConcepto = when {
-
-            concepto.isEmpty() || concepto.isBlank() -> "El concepto no puede estar vacío"
-            concepto.length > 40 -> "El concepto no puede tener más de 40 caracteres"
-            else -> null
+            )
         }
-
-        return this.concepto ?: ""
     }
 
-    fun eliminarConcepto(): String {
-        this.concepto = null
-        return this.concepto ?: ""
-    }
+    fun onChangeMonto(nuevoMonto: String) {
 
-    fun cambiarMonto(monto: String): String? {
+        _uiState.update { estadoActual ->
 
-        this.monto = monto
+            val error = if (nuevoMonto.isBlank() || nuevoMonto.toIntOrNull() == null) "Ingrese un monto válido" else null
 
-        val numero = monto.toLongOrNull()
-
-        errorMonto = when {
-
-            numero == null -> "Ingresa un número válido"
-            numero > Int.MAX_VALUE -> "El monto no puede superar 2.147.483.647"
-            numero <= 0 -> "El monto no puede ser menor a 0"
-            else -> null
-        }
-
-        return this.monto
-    }
-
-    fun eliminarMonto(): String {
-        this.monto = null
-        return this.monto ?: ""
-    }
-
-    fun obtenerMontoTotal(): Int {
-
-        return listaGastos.sumOf { it.monto }.toInt()
-    }
-
-    //Obtiene la lista de los 5 mayores gastos del mes actual
-    fun obtenerMayoresGastos(): List<Gasto> {
-
-        val formatoMesActual = SimpleDateFormat("yyyy-MM", Locale.getDefault())
-        val mesActual = formatoMesActual.format(Date())
-
-        return listaGastos
-            .filter { it.fecha.startsWith(mesActual) }
-            .sortedByDescending { it.monto }
-            .take(5)
-    }
-
-    //Obtiene la lista de los últimos 5 meses(contando el actual) con su monto total
-    fun obtenerTotalesGastosMesesAnteriores(): List<Gasto> {
-
-        return listaGastos
-            .groupBy { it.fecha.substring(0, 7) }
-            .map { (mes, gastosDelMes) ->
-                Gasto(
-                    concepto = "",
-                    monto = gastosDelMes.sumOf { it.monto },
-                    fecha = obtenerNombreMes(mes),
-                    hora = ""
+            estadoActual.copy(
+                monto = nuevoMonto,
+                errorMonto = error,
+                esFormularioValido = validarFormulario(
+                    estadoActual.concepto,
+                    estadoActual.errorConcepto,
+                    nuevoMonto,
+                    error
                 )
-            }
-            .take(5)
-    }
-
-
-    //Se asume que el formato es el recortado: "yyyy-MM"
-    fun obtenerNombreMes(fecha: String): String {
-
-        val mesNumero = fecha.substring(startIndex = 5)
-        val mesString = when(mesNumero) {
-
-            "01" -> "Enero"
-            "02" -> "Febrero"
-            "03" -> "Marzo"
-            "04" -> "Abril"
-            "05" -> "Mayo"
-            "06" -> "Junio"
-            "07" -> "Julio"
-            "08" -> "Agosto"
-            "09" -> "Septiembre"
-            "10" -> "Octubre"
-            "11" -> "Noviembre"
-            "12" -> "Diciembre"
-            else -> "Mes Erróneo"
+            )
         }
-
-        return mesString
     }
 
-    //Formato para mostrar fecha como dd/mm/yyyy
-    fun formatearFechaParaVista(fecha: String): String {
+    private fun validarFormulario(
+        concepto: String,
+        errorConcepto: String?,
+        monto: String,
+        errorMonto: String?
+    ): Boolean {
 
-        val partes = fecha.split("-")
+        val conceptoValido = concepto.isNotBlank() && errorConcepto == null
+        val montoValido = monto.isNotBlank() && errorMonto == null
 
-        if (partes.size == 3) {
-
-            val ano = partes[0]
-            val mes = partes[1]
-            val dia = partes[2]
-
-            return "$dia/$mes/$ano"
-        }
-
-        return fecha
+        return conceptoValido && montoValido
     }
 
+    fun limpiarFormulario() {
+        _uiState.value = NuevoGastoUiState()
+    }
 }

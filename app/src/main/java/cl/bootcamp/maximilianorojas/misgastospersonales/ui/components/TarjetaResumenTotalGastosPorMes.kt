@@ -8,10 +8,11 @@ import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import cl.bootcamp.maximilianorojas.misgastospersonales.data.Gasto
+import cl.bootcamp.maximilianorojas.misgastospersonales.data.modelo.ResumenMes
 
 @Composable
-fun TarjetaResumen(modifier: Modifier, titulo: String, listaGastos: List<Gasto>, tipoTarjeta: TipoTarjetaEnum) {
+fun TarjetaResumenTotalGastosPorMes(modifier: Modifier, titulo: String, listaResumenMes: List<ResumenMes>) {
+
     Card(
         modifier = modifier
     ){
@@ -27,14 +28,12 @@ fun TarjetaResumen(modifier: Modifier, titulo: String, listaGastos: List<Gasto>,
                     )
                 }
 
-                items(listaGastos) { gasto ->
+                items(listaResumenMes) { resumen ->
 
-                    when(tipoTarjeta) {
-
-                        TipoTarjetaEnum.GASTO_MES_ACTUAL -> ItemResumen(nombreItem = gasto.fecha, gasto = gasto)
-
-                        TipoTarjetaEnum.GASTOS_MAS_ALTOS -> ItemResumen(nombreItem = gasto.concepto,gasto = gasto)
-                    }
+                    ItemResumen(
+                        nombreItem = resumen.mes,
+                        monto = resumen.totalMonto
+                    )
                 }
             }
         )
