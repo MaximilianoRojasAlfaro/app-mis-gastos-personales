@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 fun TituloTarjeta(texto: String) {
     Text(
         text = texto,
-        style = MaterialTheme.typography.titleMedium,
+        style = MaterialTheme.typography.titleSmall,
         modifier = Modifier.padding(vertical = 24.dp)
     )
 }

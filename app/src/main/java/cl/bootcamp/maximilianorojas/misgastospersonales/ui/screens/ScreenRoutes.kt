@@ -1,9 +1,11 @@
 package cl.bootcamp.maximilianorojas.misgastospersonales.ui.screens
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Home
@@ -35,5 +37,12 @@ enum class ScreenRoutes(
         titulo = "Historial",
         iconoActivado = Icons.Filled.History,
         iconoDesactivado = Icons.Outlined.History
+    ),
+
+    MI_CUENTA(
+        ruta = "mi_cuenta",
+        titulo = "Mi Cuenta",
+        iconoActivado = Icons.Filled.AccountCircle,
+        iconoDesactivado = Icons.Outlined.AccountCircle
     )
 }

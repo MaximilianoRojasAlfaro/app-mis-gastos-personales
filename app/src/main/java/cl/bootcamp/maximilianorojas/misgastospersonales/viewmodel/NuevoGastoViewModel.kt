@@ -14,9 +14,7 @@ data class NuevoGastoUiState(
     val esFormularioValido: Boolean = false
 )
 
-class NuevoGastoViewModel(
-    private val gastoRepository: GastoRepository
-): ViewModel() {
+class NuevoGastoViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(NuevoGastoUiState())
     val uiState = _uiState.asStateFlow()
@@ -31,10 +29,10 @@ class NuevoGastoViewModel(
                 concepto = nuevoConcepto,
                 errorConcepto = error,
                 esFormularioValido = validarFormulario(
-                    nuevoConcepto,
-                    error,
-                    estadoActual.monto,
-                    estadoActual.errorMonto
+                    concepto = nuevoConcepto,
+                    errorConcepto = error,
+                    monto = estadoActual.monto,
+                    errorMonto = estadoActual.errorMonto
                 )
             )
         }
@@ -50,10 +48,10 @@ class NuevoGastoViewModel(
                 monto = nuevoMonto,
                 errorMonto = error,
                 esFormularioValido = validarFormulario(
-                    estadoActual.concepto,
-                    estadoActual.errorConcepto,
-                    nuevoMonto,
-                    error
+                    concepto = estadoActual.concepto,
+                    errorConcepto = estadoActual.errorConcepto,
+                    monto = nuevoMonto,
+                    errorMonto = error
                 )
             )
         }

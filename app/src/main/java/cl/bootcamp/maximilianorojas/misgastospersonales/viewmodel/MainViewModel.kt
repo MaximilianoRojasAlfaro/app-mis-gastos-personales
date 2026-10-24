@@ -1,5 +1,6 @@
 package cl.bootcamp.maximilianorojas.misgastospersonales.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -83,7 +84,7 @@ class MainViewModel(
 
         val resultado = agrupadosPorMes.map { (mes, gastosDelMes) ->
             ResumenMes(
-                mes = mes,
+                mes = obtenerNombreMes(mes.substring(5)),
                 totalMonto = gastosDelMes.sumOf { it.monto }
             )
         }
@@ -107,20 +108,11 @@ class MainViewModel(
 
 
     //---- Formateo y Fechas ----
+    fun obtenerNombreMes(mes: String): String {
 
-    //Limpia el concepto para no guardar datos basura
-    fun formatearConcepto(concepto: String): String {
+        Log.d("[MES]", mes)
 
-        val conceptoFormateado = concepto.trim().replaceFirstChar { it.uppercase() }
-
-        return conceptoFormateado
-    }
-
-    //Se asume que el formato es el recortado: "yyyy-MM"
-    fun obtenerNombreMes(fecha: String): String {
-
-        val mesNumero = fecha.substring(startIndex = 5)
-        val mesString = when(mesNumero) {
+        val mesString = when(mes) {
 
             "01" -> "Enero"
             "02" -> "Febrero"
@@ -140,7 +132,7 @@ class MainViewModel(
         return mesString
     }
 
-    //Formato para mostrar fecha como dd/mm/yyyy (como la fecha viene)
+    //Formato para mostrar fecha como dd/mm/yyyy (como la fecha es automática se asume que viene como yyyy-mm-dd)
     fun formatearFechaParaVista(fecha: String): String {
 
         val partes = fecha.split("-")

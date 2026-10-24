@@ -23,7 +23,8 @@ fun BarraInferior(
         modifier = Modifier.fillMaxWidth()
     ) {
 
-        NavigationBar() {
+        NavigationBar(
+        ) {
 
             ScreenRoutes.entries.forEach { pantalla ->
 
@@ -33,13 +34,13 @@ fun BarraInferior(
                     selected = estaSeleccionada,
                     label = { Text(text = pantalla.titulo, style = MaterialTheme.typography.labelSmall) },
                     colors = NavigationBarItemColors(
-                        selectedIconColor = MaterialTheme.colorScheme.surface,
+                        selectedIconColor = MaterialTheme.colorScheme.onPrimary,
                         selectedTextColor = MaterialTheme.colorScheme.onSurface,
                         selectedIndicatorColor = MaterialTheme.colorScheme.primary,
                         unselectedIconColor = MaterialTheme.colorScheme.onSurface,
                         unselectedTextColor = MaterialTheme.colorScheme.onSurface,
                         disabledIconColor = MaterialTheme.colorScheme.onSurface,
-                        disabledTextColor = MaterialTheme.colorScheme.onSurface
+                        disabledTextColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     icon = {
                         Icon(

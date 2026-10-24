@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +21,12 @@ fun TarjetaHistorial(concepto: String, fecha: String, monto: String, onBotonElim
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp, horizontal = 8.dp)
+            .padding(vertical = 16.dp, horizontal = 8.dp),
+
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        )
     ){
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -36,6 +42,7 @@ fun TarjetaHistorial(concepto: String, fecha: String, monto: String, onBotonElim
             ){
                 Text(
                     text = concepto,
+                    style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -44,8 +51,9 @@ fun TarjetaHistorial(concepto: String, fecha: String, monto: String, onBotonElim
 
                 Text(
                     text = fecha,
-                    textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier
                         .fillMaxWidth()
                 )
@@ -54,6 +62,7 @@ fun TarjetaHistorial(concepto: String, fecha: String, monto: String, onBotonElim
             Text(
                 text = monto,
                 textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(.4f)
