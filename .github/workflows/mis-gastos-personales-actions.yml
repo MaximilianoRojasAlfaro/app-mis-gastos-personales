@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Latest Commit
-        uses: actions/checkout
+        uses: actions/checkout@v7
       - name: Java Setup
         uses: actions/setup-java@6
         with:
